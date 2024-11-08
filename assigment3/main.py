@@ -86,13 +86,73 @@ def get_posts_by_user(conn: psycopg.connection) -> None :
     posts = cur.fetchall()  
     cur.close()
     for post in posts:
-        print(f"{post[0]:<4} | {post[1]:<40} | {post[2]:<100}")
+        print(f"{post[0]:<4} | {post[1]:<35} | {post[2]:<100}")
+    return None
+    
 
 def get_comments_of_post(conn: psycopg.connection) -> None:
-    pass
+    """
+        Get all comments of a post by post ID
+    """
+    post_id = input('Enter the post ID: ')
+
+    # check if the input is a valid number
+    if not post_id.isdigit():
+        print('Invalid input. Please try again.')
+        return get_comments_of_post(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT u.name, c.content FROM Comment c JOIN "User" u ON u.id = c.user_id WHERE c.post_id = %s;', (int(post_id), ))
+    comments = cur.fetchall()
+    cur.close()
+    print("\nUSER            | COMMENT")
+    for comment in comments:
+        print(f"{comment[0]:<15} | {comment[1]:<100}")
+    return None
 
 
-def main():
+def get_org_members(conn: psycopg.connection) -> None:
+    """
+        Get all members of an organization by organization ID
+    """
+    org_id = input('Enter the organization ID: ')
+
+    # check if the input is a valid number
+    if not org_id.isdigit():
+        print('Invalid input. Please try again.')
+        return get_org_members(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT u.name, o.name FROM "User" u JOIN organization o ON o.id = %s WHERE u.org_id = %s;', (int(org_id), int(org_id), ))
+    members = cur.fetchall()
+    cur.close()
+    print(f"\nMembers of {members[0][1]}:")
+    for member in members:
+        print(member[0])
+    return None
+
+def get_org_announcements(conn: psycopg.connection) -> None:
+    """
+        Get all announcements of an organization by organization ID
+    """
+    org_id = input('Enter the organization ID: ')
+
+    # check if the input is a valid number
+    if not org_id.isdigit():
+        print('Invalid input. Please try again.')
+        return get_org_announcements(conn)
+
+    cur = conn.cursor()
+    cur.execute('SELECT o.name, a.title, a.content FROM organization o JOIN announcement a ON a.org_id = %s WHERE o.id = %s;', (int(org_id), int(org_id), ))    
+    announcements = cur.fetchall()
+    cur.close()
+    print(f"\nAnnouncements of {announcements[0][0]}:")
+    for announcement in announcements:
+        print(f"{announcement[1]:<40} | {announcement[2]}")
+    return None
+
+
+def main() -> None:
     global CURRENT_DB
     CURRENT_DB = switch_db()
 
@@ -114,9 +174,15 @@ def main():
                 get_posts_by_user(conn)
             elif action == 4:   # get all comments of a post
                 get_comments_of_post(conn) 
-           
+            elif action == 5:   # get all members of an organization
+                get_org_members(conn)
+            elif action == 6:   # get all posts of an organization
+                get_org_announcements(conn)
+            else:
+                exit(1)
         break
-        
+    return None 
+
 
 if __name__ == '__main__':
     load_dotenv(override=True)
