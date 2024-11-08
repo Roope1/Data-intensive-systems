@@ -31,7 +31,7 @@ def print_action_menu() -> int:
     print('\t0. Exit')
     print()
 
-    # print current database in front of the prompt to indicate which database is currently connected
+    # print current database in front of the prompt to indicate which database is the user currently connected to
     action = input(f'{CURRENT_DB.name} | Enter the action you want to perform: ')
 
     # check if the input is a valid number
