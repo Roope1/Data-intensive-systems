@@ -1,0 +1,22 @@
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    #volumes:
+    #  - ./.data/mongo/data:/data/db
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
+    #volumes:
+    #  - ./.data/postgres/data:/var/lib/postgresql/data
